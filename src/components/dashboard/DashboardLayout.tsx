@@ -1,10 +1,19 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
-import { Bell, Search, ChevronDown } from "lucide-react";
+import { Bell, LogOut, Search, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const DashboardLayout = () => {
+  const { signOut, user } = useAuth();
+  const navigate = useNavigate();
+
+  const onSignOut = async () => {
+    await signOut();
+    navigate("/login", { replace: true });
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
@@ -28,13 +37,26 @@ export const DashboardLayout = () => {
             <Button variant="ghost" size="icon" className="h-8 w-8">
               <Bell className="h-4 w-4" />
             </Button>
-            <button className="flex items-center gap-2 glass rounded-lg pl-1 pr-2 py-1">
-              <div className="h-7 w-7 rounded-md bg-gradient-to-br from-accent to-primary grid place-items-center text-[10px] font-bold text-background">PT</div>
-              <div className="text-left hidden sm:block">
-                <div className="text-xs font-semibold leading-tight">Pertamina ESG</div>
-                <div className="text-[10px] text-muted-foreground leading-tight">Executive · L4</div>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 gap-1.5 text-muted-foreground hover:text-foreground"
+              onClick={onSignOut}
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline text-xs">Sign out</span>
+            </Button>
+            <button type="button" className="flex items-center gap-2 glass rounded-lg pl-1 pr-2 py-1 max-w-[200px]">
+              <div className="h-7 w-7 shrink-0 rounded-md bg-gradient-to-br from-accent to-primary grid place-items-center text-[10px] font-bold text-background">
+                {(user?.email?.[0] ?? "?").toUpperCase()}
               </div>
-              <ChevronDown className="h-3 w-3 text-muted-foreground" />
+              <div className="text-left hidden sm:block min-w-0">
+                <div className="text-xs font-semibold leading-tight truncate">
+                  {user?.email ?? "Signed in"}
+                </div>
+                <div className="text-[10px] text-muted-foreground leading-tight">Session active</div>
+              </div>
+              <ChevronDown className="h-3 w-3 text-muted-foreground shrink-0" />
             </button>
           </header>
           <main className="flex-1 overflow-auto">

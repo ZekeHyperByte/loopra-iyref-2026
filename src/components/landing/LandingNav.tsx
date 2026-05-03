@@ -44,7 +44,7 @@ export const LandingNav = () => {
             Request Demo
           </Button>
           <Button asChild size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold">
-            <Link to="/dashboard">
+            <Link to="/login">
               Partner Login <ArrowUpRight className="ml-1 h-3.5 w-3.5" />
             </Link>
           </Button>

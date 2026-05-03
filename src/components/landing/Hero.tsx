@@ -51,7 +51,7 @@ export const Hero = () => {
             className="flex flex-wrap items-center gap-3 mt-8"
           >
             <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold glow-lime">
-              <Link to="/dashboard">
+              <Link to="/login">
                 Enter Command Center <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
