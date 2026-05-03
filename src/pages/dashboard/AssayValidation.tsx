@@ -1,9 +1,10 @@
 import { GlassCard } from "@/components/GlassCard";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { Button } from "@/components/ui/button";
-import { Check, X, Flag, Camera, Cpu } from "lucide-react";
+import { Check, Flag, Camera, Cpu } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 
 const initial = [
   { id: "ASY-2401", hub: "Lampung Selatan", op: "Ahmad S.", weight: 184.2, ai: 96, suggested: "A", notes: "Sucrose density nominal, low moisture." },
@@ -15,7 +16,10 @@ const initial = [
 
 const AssayValidation = () => {
   const [items, setItems] = useState(initial);
-  const remove = (id: string) => setItems((x) => x.filter((i) => i.id !== id));
+  const remove = (id: string, action: "flag" | "approve") => {
+    setItems((x) => x.filter((i) => i.id !== id));
+    toast.success(action === "approve" ? "Assay approved." : "Assay flagged for review.");
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -70,10 +74,10 @@ const AssayValidation = () => {
                     </span>
                   </div>
                 </div>
-                <Button onClick={() => remove(a.id)} size="sm" variant="outline" className="border-warning/40 text-warning hover:bg-warning/10">
+                <Button onClick={() => remove(a.id, "flag")} size="sm" variant="outline" className="border-warning/40 text-warning hover:bg-warning/10">
                   <Flag className="h-3.5 w-3.5 mr-1" /> Flag
                 </Button>
-                <Button onClick={() => remove(a.id)} size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                <Button onClick={() => remove(a.id, "approve")} size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
                   <Check className="h-3.5 w-3.5 mr-1" /> Approve
                 </Button>
               </GlassCard>

@@ -5,17 +5,18 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { RequireAuth } from "@/components/auth/RequireAuth";
+import { RoleRoute } from "@/components/auth/RoleRoute";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Login from "./pages/Login.tsx";
 import { DashboardLayout } from "./components/dashboard/DashboardLayout";
+import DashboardIndex from "./pages/dashboard/DashboardIndex";
 import Inventory from "./pages/dashboard/Inventory";
-import Network from "./pages/dashboard/Network";
-import Forecast from "./pages/dashboard/Forecast";
 import Ledger from "./pages/dashboard/Ledger";
 import Fleet from "./pages/dashboard/Fleet";
 import HubHealth from "./pages/dashboard/HubHealth";
-import AssayValidation from "./pages/dashboard/AssayValidation";
+import DepositReview from "./pages/dashboard/DepositReview";
+import EsgReports from "./pages/dashboard/EsgReports";
 
 const queryClient = new QueryClient();
 
@@ -37,13 +38,62 @@ const App = () => (
                 </RequireAuth>
               }
             >
-              <Route index element={<Inventory />} />
-              <Route path="network" element={<Network />} />
-              <Route path="forecast" element={<Forecast />} />
-              <Route path="ledger" element={<Ledger />} />
-              <Route path="fleet" element={<Fleet />} />
-              <Route path="hub-health" element={<HubHealth />} />
-              <Route path="assay" element={<AssayValidation />} />
+              <Route
+                index
+                element={
+                  <RoleRoute allow={["ENTERPRISE", "ADMIN"]}>
+                    <DashboardIndex />
+                  </RoleRoute>
+                }
+              />
+              <Route
+                path="inventory"
+                element={
+                  <RoleRoute allow={["ENTERPRISE"]}>
+                    <Inventory />
+                  </RoleRoute>
+                }
+              />
+              <Route
+                path="ledger"
+                element={
+                  <RoleRoute allow={["ENTERPRISE"]}>
+                    <Ledger />
+                  </RoleRoute>
+                }
+              />
+              <Route
+                path="esg-reports"
+                element={
+                  <RoleRoute allow={["ENTERPRISE"]}>
+                    <EsgReports />
+                  </RoleRoute>
+                }
+              />
+              <Route
+                path="fleet"
+                element={
+                  <RoleRoute allow={["ADMIN"]}>
+                    <Fleet />
+                  </RoleRoute>
+                }
+              />
+              <Route
+                path="hub-health"
+                element={
+                  <RoleRoute allow={["ADMIN"]}>
+                    <HubHealth />
+                  </RoleRoute>
+                }
+              />
+              <Route
+                path="deposits"
+                element={
+                  <RoleRoute allow={["ADMIN"]}>
+                    <DepositReview />
+                  </RoleRoute>
+                }
+              />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>

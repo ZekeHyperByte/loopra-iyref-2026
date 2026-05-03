@@ -16,6 +16,5 @@ export const supabase = createClient(url, anonKey, {
   },
 });
 
+/** @deprecated Use AppRole from @/lib/roles */
 export type PortalRole = "enterprise_partner" | "admin";
-
-export const PORTAL_USER_METADATA_KEY = "portal";

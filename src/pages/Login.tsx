@@ -9,21 +9,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
-import { PORTAL_USER_METADATA_KEY, type PortalRole, supabase } from "@/lib/supabase";
+import { USER_ROLE_METADATA_KEY, normalizeRole, type AppRole } from "@/lib/roles";
+import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
-const portalCopy: Record<
-  PortalRole,
-  { title: string; description: string; badge: string }
-> = {
-  enterprise_partner: {
-    title: "Enterprise Partner",
-    description: "Supply chain visibility, assays, and ledger access for partner organizations.",
-    badge: "PARTNER",
+const portalCopy: Record<AppRole, { title: string; description: string; badge: string }> = {
+  ENTERPRISE: {
+    title: "Enterprise",
+    description: "Inventory levels, carbon credits, and ESG reporting — no fleet or hub operations consoles.",
+    badge: "ENTERPRISE",
   },
-  admin: {
+  ADMIN: {
     title: "Administrator",
-    description: "Operational control, fleet, hub health, and validation workflows.",
+    description: "Fleet tracking, hub management, and deposit validation — operations console.",
     badge: "ADMIN",
   },
 };
@@ -31,7 +29,7 @@ const portalCopy: Record<
 const Login = () => {
   const navigate = useNavigate();
   const { session, loading: authLoading } = useAuth();
-  const [portal, setPortal] = useState<PortalRole>("enterprise_partner");
+  const [portal, setPortal] = useState<AppRole>("ENTERPRISE");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -61,16 +59,18 @@ const Login = () => {
         return;
       }
 
-      const assigned = data.user?.user_metadata?.[PORTAL_USER_METADATA_KEY] as string | undefined;
+      const rawMeta =
+        data.user?.user_metadata?.[USER_ROLE_METADATA_KEY] ?? data.user?.user_metadata?.portal ?? null;
+      const assigned = normalizeRole(rawMeta);
       if (assigned && assigned !== portal) {
         await supabase.auth.signOut();
         toast.error(
-          `This account is registered for the ${assigned === "admin" ? "Admin" : "Enterprise Partner"} portal. Switch tabs and try again.`,
+          `This account is registered as ${assigned}. Switch to the ${assigned === "ADMIN" ? "Admin" : "Enterprise"} tab and try again.`,
         );
         return;
       }
 
-      toast.success("Welcome back.");
+      toast.success("Signed in successfully.");
       navigate("/dashboard", { replace: true });
     } finally {
       setSubmitting(false);
@@ -98,7 +98,10 @@ const Login = () => {
 
       <header className="relative z-10 border-b border-border/40 glass-strong">
         <div className="container flex items-center justify-between h-16 px-4">
-          <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors text-sm">
+          <Link
+            to="/"
+            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors text-sm"
+          >
             <ArrowLeft className="h-4 w-4" />
             Back to site
           </Link>
@@ -113,15 +116,15 @@ const Login = () => {
             <p className="text-[11px] font-mono tracking-[0.3em] text-muted-foreground mb-3">SECURE ACCESS</p>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Command Center</h1>
             <p className="text-muted-foreground text-sm mt-2 max-w-sm mx-auto">
-              Sign in with your Loopra credentials. Choose the portal that matches your account.
+              Sign in with your Loopra credentials. Pick the role that matches your account metadata in Supabase.
             </p>
           </div>
 
           <GlassCard strong className="border border-border/50 shadow-[var(--shadow-card)]">
-            <Tabs value={portal} onValueChange={(v) => setPortal(v as PortalRole)} className="w-full">
+            <Tabs value={portal} onValueChange={(v) => setPortal(v as AppRole)} className="w-full">
               <TabsList className="grid w-full grid-cols-2 h-12 p-1 bg-secondary/80 border border-border/60 rounded-xl">
                 <TabsTrigger
-                  value="enterprise_partner"
+                  value="ENTERPRISE"
                   className={cn(
                     "rounded-lg gap-1.5 text-xs sm:text-sm px-2 sm:px-3",
                     "data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm",
@@ -129,11 +132,10 @@ const Login = () => {
                   )}
                 >
                   <Building2 className="h-4 w-4 opacity-80 shrink-0" />
-                  <span className="sm:hidden">Partner</span>
-                  <span className="hidden sm:inline">Enterprise Partner</span>
+                  Enterprise
                 </TabsTrigger>
                 <TabsTrigger
-                  value="admin"
+                  value="ADMIN"
                   className={cn(
                     "rounded-lg gap-1.5 text-xs sm:text-sm px-2 sm:px-3",
                     "data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm",
@@ -195,7 +197,9 @@ const Login = () => {
             </form>
 
             <p className="text-[11px] text-muted-foreground text-center mt-6 font-mono leading-relaxed">
-              Need access? Contact your Loopra account manager.
+              Primary: <span className="text-accent">user_roles.role_name</span> (see{" "}
+              <span className="text-mono">supabase/user_roles.sql</span>). Fallback:{" "}
+              <span className="text-accent">profiles</span> or <span className="text-accent">user_metadata.role</span>.
             </p>
           </GlassCard>
         </div>

@@ -3,8 +3,12 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Cpu, ShieldCheck, Activity } from "lucide-react";
 import { EnergyOrbit } from "./EnergyOrbit";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const Hero = () => {
+  const { session } = useAuth();
+  const commandTarget = session ? "/dashboard" : "/login";
+
   return (
     <section className="relative pt-36 pb-24 overflow-hidden">
       <div className="absolute inset-0 grid-bg opacity-30 [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_70%)]" />
@@ -51,7 +55,7 @@ export const Hero = () => {
             className="flex flex-wrap items-center gap-3 mt-8"
           >
             <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 font-semibold glow-lime">
-              <Link to="/login">
+              <Link to={commandTarget}>
                 Enter Command Center <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
