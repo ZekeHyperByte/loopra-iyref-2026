@@ -43,12 +43,4 @@
 
 ---
 
-## 👥 The Team (Team IYREF-2026)
-
-*   **[Nama Kamu]** - Lead Digital Architect & Fullstack Developer
-*   **[Nama Teman]** - UI/UX Designer & Product Researcher
-*   **[Nama Teman]** - Bio-Energy Strategist
-
----
-
 *Loopra is an entry for the IYREF 2026 Hackathon Competition.*
