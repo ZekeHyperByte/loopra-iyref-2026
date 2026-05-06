@@ -34,7 +34,6 @@ Use the accounts below to explore the different interfaces of the Loopra Ecosyst
 - **Frontend:** React.js, Tailwind CSS, Framer Motion, Shadcn UI.
 - **Backend/Database:** Supabase (PostgreSQL, Auth, Real-time).
 - **Deployment:** Vercel.
-- **Tools:** Cursor AI, Lovable (Initial Prototyping), GitHub.
 
 ---
 
